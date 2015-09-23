@@ -32,7 +32,28 @@
 			));  
 
 			if($validation->passed()){
-				echo 'Validated!'; 
+				$user = new User();
+				$salt = Hash::salt(32); 
+				
+				try{
+
+					$user->create(array(
+						'username' => Input::get('username'), 
+						'password' => Hash::make(Input::get('password'), $salt), 
+						'name' => Input::get('name'),
+						'salt' => $salt, 
+						'group' => 1, 
+						'joined' => date('Y-m-d H:i:s')	
+
+					));
+
+					Session::flash('home', 'You have been registered and can now log in'); 
+					Redirect::to('index.php'); 
+
+
+				} catch(Exception $e){
+					die($e->getMessage()); 
+				}
 			} else {
 				foreach ($validation->errors() as $error) {
 					echo $error, '<br>'; 
